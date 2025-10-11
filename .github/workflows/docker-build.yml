@@ -3,16 +3,22 @@
 # 工作流名称
 name: Build and Push Multi-Arch Image to GHCR
 
-# 触发工作流的事件
 on:
-  push:
-    branches:
-      - main
-  # 允许您在 Actions 页面手动触发此工作流
+  # 触发器一：当 'Sync Main Branch' 工作流成功完成后自动运行
+  workflow_run:
+    workflows: ["Sync Fork"] # 确保这里的名字和你的同步工作流的 name 一致
+    types:
+      - completed
+      
+  # 触发器二：允许您在 Actions 页面手动触发此工作流
   workflow_dispatch:
 
 jobs:
   build-and-push:
+    # 【重要】更新此处的 if 条件
+    # 条件：当 (触发的工作流结论是 'success') 或者 (本次运行是由手动触发 'workflow_dispatch' 的)
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+    
     runs-on: ubuntu-latest
     permissions:
       contents: read
