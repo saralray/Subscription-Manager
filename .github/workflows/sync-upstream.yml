@@ -1,0 +1,55 @@
+# GitHub Action 的名称
+name: Sync Fork
+
+on:
+  schedule:
+    # 使用 cron 语法，表示每小时执行一次
+    # '0 * * * *' 代表在每小时的 0 分时运行
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # 这行允许你手动点击 "Run workflow" 按钮来触发同步
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 第一步：检出你的仓库代码
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 需要个人访问令牌 (PAT) 来触发后续的 CI/CD
+          # 如果你的工作流也需要被触发，这步是必须的
+          # 如果不需要，可以简化为 fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # 第二步：将原始仓库的代码同步到你的 Fork 仓库
+      - name: Sync upstream repository
+        id: sync
+        run: |
+          # 设置 Git 用户信息
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # 添加原始仓库 (upstream) 的远程地址
+          # !!! 重要：请将下面的 URL 替换为原始仓库的 URL !!!
+          git remote add upstream https://github.com/huhusmang/Subscription-Management.git
+
+          # 从 upstream 拉取最新的信息
+          git fetch upstream
+
+          # 切换到你本地的 main 分支
+          git checkout main
+
+          # 将 upstream/main 的最新提交合并到你的 main 分支
+          # 使用 rebase 可以让提交历史更整洁
+          echo "Rebasing local main with upstream/main..."
+          git rebase upstream/main
+
+          # 将更新后的 main 分支强制推送到你自己的仓库 (origin)
+          # 使用 --force-with-lease 更安全，确保不会覆盖他人的提交
+          echo "Pushing changes to origin..."
+          git push origin main --force-with-lease
+        # !!! 警告：请务必将上面的 https://github.com/OWNER/REPO.git 替换为原始仓库的真实URL !!!
+        # 例如: https://github.com/vuejs/vue.git
