@@ -1,66 +1,79 @@
-# .github/workflows/docker-publish.yml
-
-# 工作流名称
-name: Build and Push Multi-Arch Image to GHCR
+name: Build and Push Docker Image
 
 on:
-  # 触发器一：当 'Sync Main Branch' 工作流成功完成后自动运行
-  workflow_run:
-    workflows: ["Sync Fork"] # 确保这里的名字和你的同步工作流的 name 一致
-    types:
-      - completed
-      
-  # 触发器二：允许您在 Actions 页面手动触发此工作流
+  push:
+    branches: [ main, master ]
+    tags: ['v*']
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
 
+concurrency:
+  group: docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  build-and-push:
-    # 【重要】更新此处的 if 条件
-    # 条件：当 (触发的工作流结论是 'success') 或者 (本次运行是由手动触发 'workflow_dispatch' 的)
-    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
-    
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
+      - name: Set up QEMU (multi-architecture)
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # --- 修正點 1：步驟和變數名稱更清晰 ---
-      - name: Set lowercase repository name
-        run: |
-          # github.repository 的格式是 'owner/repo-name'
-          LOWERCASE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "LOWERCASE_REPO=${LOWERCASE_REPO}" >> $GITHUB_ENV
-
-      - name: Extract metadata for Docker
+      - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # --- 修正點 2：使用正確的 env 上下文 ---
-          # 移除了錯誤的 'github.' 前綴
-          images: ghcr.io/${{ env.LOWERCASE_REPO }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      # PR: Build only, no push, single architecture
+      - name: Build (PR without push)
+        if: github.event_name == 'pull_request'
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Non-PR: Login + multi-architecture push
+      - name: Login to container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          

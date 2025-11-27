@@ -10,6 +10,7 @@ interface CategoryPieChartProps {
   data: CategoryExpense[]
   currency: string
   className?: string
+  descriptionKey: string
 }
 
 // Define colors for different categories - using CSS variables for theme support
@@ -27,7 +28,7 @@ const COLORS = [
   "hsl(var(--chart-5))",
 ]
 
-export function CategoryPieChart({ data, currency, className }: CategoryPieChartProps) {
+export function CategoryPieChart({ data, currency, className, descriptionKey }: CategoryPieChartProps) {
   const { t } = useTranslation('reports')
   const { categories } = useSubscriptionStore()
   
@@ -56,7 +57,7 @@ export function CategoryPieChart({ data, currency, className }: CategoryPieChart
     <Card className={className}>
       <CardHeader>
         <CardTitle className="text-lg">{t('chart.spendingByCategory')}</CardTitle>
-        <CardDescription>{t('chart.breakdownByCategory')}</CardDescription>
+        <CardDescription>{t(descriptionKey)}</CardDescription>
       </CardHeader>
       <CardContent className="px-2 sm:px-6">
         {data.length === 0 ? (

@@ -38,6 +38,7 @@
     "annualSpendingOverTime": "Annual spending over time",
     "annualSpendingByCategory": "Annual spending by category",
     "breakdownByCategory": "Breakdown of expenses by subscription category (Last 12 months)",
+    "breakdownByCategoryYearly": "Breakdown of expenses by subscription category (Last 3 years)",
     "paymentDetails": "Payment Details",
     "viewPaymentRecords": "View all payment records for this period",
     "dailyAvg": "Daily Avg",

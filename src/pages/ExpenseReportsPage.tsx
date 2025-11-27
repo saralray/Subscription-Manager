@@ -473,6 +473,7 @@ export function ExpenseReportsPage() {
                   <CategoryPieChart
                     data={categoryExpenses}
                     currency={userCurrency}
+                    descriptionKey="chart.breakdownByCategory"
                   />
                 )}
               </div>
@@ -522,6 +523,7 @@ export function ExpenseReportsPage() {
                     <CategoryPieChart
                       data={yearlyCategoryExpenses}
                       currency={userCurrency}
+                      descriptionKey="chart.breakdownByCategoryYearly"
                     />
                   )}
                 </div>

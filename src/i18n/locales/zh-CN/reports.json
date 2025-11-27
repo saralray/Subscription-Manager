@@ -38,6 +38,7 @@
     "annualSpendingOverTime": "年度支出趋势",
     "annualSpendingByCategory": "按类别年度支出",
     "breakdownByCategory": "按订阅类别支出明细（过去12个月）",
+    "breakdownByCategoryYearly": "按订阅类别支出明细（过去3年）",
     "paymentDetails": "支付详情",
     "viewPaymentRecords": "查看此期间的所有支付记录",
     "dailyAvg": "日均",

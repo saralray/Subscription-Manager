@@ -1,6 +1,14 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { Globe } from 'lucide-react';
+
+import { Button } from './button'; // 引入 Button
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './dropdown-menu'; // 引入 DropdownMenu
 import { cn } from '@/lib/utils';
 import { apiClient } from '@/utils/api-client';
 
@@ -10,7 +18,7 @@ const languages = [
 ];
 
 export function LanguageSwitcher() {
-  const { i18n, t } = useTranslation('settings');
+  const { i18n } = useTranslation();
 
   const handleLanguageChange = async (language: string) => {
     i18n.changeLanguage(language);
@@ -46,21 +54,23 @@ export function LanguageSwitcher() {
   const currentLanguage = languages.find(lang => lang.code === i18n.language);
 
   return (
-    <Select value={i18n.language} onValueChange={handleLanguageChange}>
-      <SelectTrigger className={cn(
-        "w-auto min-w-0 px-3 py-2 h-9 gap-1.5"
-      )}>
-        <SelectValue>
-          {currentLanguage?.name || t('language')}
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {languages.map((lang) => (
-          <SelectItem key={lang.code} value={lang.code}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Globe className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {languages.map(lang => (
+          <DropdownMenuItem
+            key={lang.code}
+            onClick={() => handleLanguageChange(lang.code)}
+            className={cn({ 'font-bold': i18n.language === lang.code })}
+          >
             {lang.name}
-          </SelectItem>
+          </DropdownMenuItem>
         ))}
-      </SelectContent>
-    </Select>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
