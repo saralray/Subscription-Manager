@@ -33,7 +33,7 @@ A modern subscription management system that helps users easily manage and track
 ## 🌟 Project Features
 
 - **Smart Subscription Management** - Comprehensive subscription lifecycle management with automatic/manual renewal support
-- **Multi-currency Support** - Support for 7 major currencies with real-time automatic exchange rate updates
+- **Multi-currency Support** - Support for 10 major currencies with real-time automatic exchange rate updates
 - **Expense Analysis Reports** - Powerful data analysis and visualization chart functionality
 - **Responsive Design** - Perfect adaptation for desktop and mobile devices
 - **Local-first** - Local data storage based on SQLite for privacy protection
@@ -50,7 +50,7 @@ A modern subscription management system that helps users easily manage and track
 
 ### Advanced Features
 - ✅ **Automatic Renewal Processing** - Smart detection of expiring subscriptions with automatic updates
-- ✅ **Multi-currency Support** - Real-time conversion for 9 major currencies (USD, EUR, GBP, CAD, AUD, JPY, CNY, TRY, HKD)
+- ✅ **Multi-currency Support** - Real-time conversion for 10 major currencies (USD, EUR, GBP, CAD, AUD, JPY, CNY, TRY, HKD, THB)
 - ✅ **Automatic Exchange Rate Updates** - Integrated with Tianapi for daily exchange rate updates
 - ✅ **Expense Report Dashboard** - Comprehensive expense analysis and visualization
 - ✅ **Payment History Tracking** - Complete payment records and historical analysis
@@ -192,7 +192,7 @@ Create a `.env` file and configure the following variables:
 PORT=3001
 
 # Base currency (optional, default CNY)
-# Supported: USD, EUR, GBP, CNY, JPY, CAD, AUD, TRY, HKD
+# Supported: USD, EUR, GBP, CNY, JPY, CAD, AUD, TRY, HKD, THB
 BASE_CURRENCY=CNY
 
 # Database path (used for Docker deployment)
