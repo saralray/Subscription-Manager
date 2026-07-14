@@ -84,6 +84,7 @@ export interface TranslationKeys {
     notificationHistory: string;
     telegram: string;
     email: string;
+    discord: string;
     chatId: string;
     chatIdHelp: string;
     test: string;

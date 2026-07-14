@@ -74,8 +74,8 @@ class NotificationController {
                 .range(updateData.advance_days, 'advance_days', 0, 365)
                 .array(updateData.notification_channels, 'notification_channels')
                 .custom(updateData.notification_channels, 'notification_channels',
-                    (channels) => !channels || channels.every(channel => ['telegram', 'email', 'webhook'].includes(channel)),
-                    'notification_channels must contain only valid channel types: telegram, email, webhook'
+                    (channels) => !channels || channels.every(channel => ['telegram', 'email', 'webhook', 'discord'].includes(channel)),
+                    'notification_channels must contain only valid channel types: telegram, email, webhook, discord'
                 )
                 .boolean(updateData.repeat_notification, 'repeat_notification');
 
@@ -193,7 +193,7 @@ class NotificationController {
             validator
                 .required(channel_type, 'channel_type')
                 .string(channel_type, 'channel_type')
-                .enum(channel_type, 'channel_type', ['telegram', 'email', 'webhook']);
+                .enum(channel_type, 'channel_type', ['telegram', 'email', 'webhook', 'discord']);
 
             if (validator.hasErrors()) {
                 return responseHelper.badRequest(res, validator.getErrors());

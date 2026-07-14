@@ -4,7 +4,7 @@
  */
 
 // 所有支持的货币代码（固定不变）
-const ALL_CURRENCY_CODES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CNY', 'TRY', 'HKD'];
+const ALL_CURRENCY_CODES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CNY', 'TRY', 'HKD', 'THB'];
 
 // 基础货币配置 - 从环境变量读取，默认为 CNY
 let BASE_CURRENCY = process.env.BASE_CURRENCY || 'CNY';
@@ -34,7 +34,8 @@ const ALL_CURRENCIES = [
     { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
     { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
     { code: 'TRY', name: 'Turkish Lira', symbol: '₺' },
-    { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$' }
+    { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$' },
+    { code: 'THB', name: 'Thai Baht', symbol: '฿' }
 ];
 
 /**
@@ -56,7 +57,8 @@ const BASE_RATES = {
         AUD: 0.2077,
         JPY: 16.9231,
         TRY: 4.2000,
-        HKD: 1.1923
+        HKD: 1.1923,
+        THB: 5.0754
     },
     USD: {
         USD: 1.0000,
@@ -67,7 +69,8 @@ const BASE_RATES = {
         AUD: 1.3500,
         JPY: 110.0000,
         TRY: 27.0000,
-        HKD: 7.8000
+        HKD: 7.8000,
+        THB: 33.0000
     },
     EUR: {
         EUR: 1.0000,
@@ -78,7 +81,8 @@ const BASE_RATES = {
         AUD: 1.5882,
         JPY: 129.4118,
         TRY: 31.7647,
-        HKD: 9.1765
+        HKD: 9.1765,
+        THB: 38.8235
     },
     GBP: {
         GBP: 1.0000,
@@ -89,7 +93,8 @@ const BASE_RATES = {
         AUD: 1.8000,
         JPY: 146.6667,
         TRY: 36.0000,
-        HKD: 10.3333
+        HKD: 10.3333,
+        THB: 44.0000
     },
     CAD: {
         CAD: 1.0000,
@@ -100,7 +105,8 @@ const BASE_RATES = {
         AUD: 1.0800,
         JPY: 88.0000,
         TRY: 21.6000,
-        HKD: 6.2400
+        HKD: 6.2400,
+        THB: 26.4000
     },
     AUD: {
         AUD: 1.0000,
@@ -111,7 +117,8 @@ const BASE_RATES = {
         CAD: 0.9259,
         JPY: 81.4815,
         TRY: 20.0000,
-        HKD: 5.7778
+        HKD: 5.7778,
+        THB: 24.4431
     },
     JPY: {
         JPY: 1.0000,
@@ -122,7 +129,8 @@ const BASE_RATES = {
         CAD: 0.0114,
         AUD: 0.0123,
         TRY: 0.2455,
-        HKD: 0.0667
+        HKD: 0.0667,
+        THB: 0.3003
     },
     TRY: {
         TRY: 1.0000,
@@ -133,7 +141,8 @@ const BASE_RATES = {
         CAD: 0.0463,
         AUD: 0.0500,
         JPY: 4.0741,
-        HKD: 0.2889
+        HKD: 0.2889,
+        THB: 1.2210
     },
     HKD: {
         HKD: 1.0000,
@@ -144,7 +153,20 @@ const BASE_RATES = {
         CAD: 0.1603,
         AUD: 0.1731,
         JPY: 14.1026,
-        TRY: 3.4615
+        TRY: 3.4615,
+        THB: 4.2306
+    },
+    THB: {
+        THB: 1.0000,
+        USD: 0.0303,
+        CNY: 0.1970,
+        EUR: 0.0258,
+        GBP: 0.0227,
+        CAD: 0.0379,
+        AUD: 0.0409,
+        JPY: 3.3300,
+        TRY: 0.8190,
+        HKD: 0.2364
     }
 };
 

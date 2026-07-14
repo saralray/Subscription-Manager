@@ -13,6 +13,7 @@ export const CURRENCY_NAMES: Record<CurrencyCode, string> = {
   INR: 'Indian Rupee',
   TRY: 'Turkish Lira',
   HKD: 'Hong Kong Dollar',
+  THB: 'Thai Baht',
 };
 
 export const CURRENCY_SYMBOLS: Record<CurrencyCode, string> = {
@@ -27,6 +28,7 @@ export const CURRENCY_SYMBOLS: Record<CurrencyCode, string> = {
   INR: '₹',
   TRY: '₺',
   HKD: 'HK$',
+  THB: '฿',
 };
 
 // Chart colors

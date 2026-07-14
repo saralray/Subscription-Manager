@@ -1,5 +1,6 @@
 const TelegramService = require('./telegramService');
 const EmailService = require('./emailService');
+const DiscordService = require('./discordService');
 const { createDatabaseConnection } = require('../config/database');
 const UserPreferenceService = require('./userPreferenceService');
 const { getTemplate } = require('../config/notificationTemplates');
@@ -14,6 +15,7 @@ class NotificationService {
         this.db = db || createDatabaseConnection();
         this.telegramService = new TelegramService();
         this.emailService = new EmailService();
+        this.discordService = new DiscordService();
         this.userPreferenceService = new UserPreferenceService(this.db);
     }
 
@@ -119,6 +121,12 @@ class NotificationService {
                         subject,
                         htmlContent: messageContent
                     });
+                    break;
+                case 'discord':
+                    sendResult = await this.discordService.sendMessage(
+                        recipient,
+                        messageContent
+                    );
                     break;
                 default:
                     sendResult = { success: false, error: `Unsupported channel: ${channel}` };
@@ -418,6 +426,9 @@ class NotificationService {
             if (channelConfig.config.chat_id) {
                 return channelConfig.config.chat_id;
             }
+            if (channelConfig.config.webhook_url) {
+                return channelConfig.config.webhook_url;
+            }
             if (channelConfig.config.email) {
                 return channelConfig.config.email;
             }
@@ -509,6 +520,11 @@ class NotificationService {
             if (channelType === 'email') {
                 const address = this.getRecipient(channelConfig);
                 return await this.emailService.sendTestMail(address);
+            }
+
+            if (channelType === 'discord') {
+                const webhookUrl = this.getRecipient(channelConfig);
+                return await this.discordService.sendTestMessage(webhookUrl);
             }
 
             return { success: false, message: 'Unsupported channel type' };

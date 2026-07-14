@@ -42,6 +42,16 @@ class DatabaseMigrations {
         version: 7,
         name: 'add_admin_users_table',
         up: () => this.migration_007_add_admin_users_table()
+      },
+      {
+        version: 8,
+        name: 'add_thb_currency_support',
+        up: () => this.migration_008_add_thb_currency_support()
+      },
+      {
+        version: 9,
+        name: 'add_discord_notification_support',
+        up: () => this.migration_009_add_discord_notification_support()
       }
     ];
   }
@@ -656,6 +666,105 @@ class DatabaseMigrations {
         console.log('ℹ️  Updated existing admin timestamps');
       }
     }
+  }
+
+  // Migration 008: Add THB currency support
+  migration_008_add_thb_currency_support() {
+    console.log('📝 Adding THB currency support...');
+
+    // Guard: exchange_rates is created in migration 001. If it's missing
+    // (e.g. a partially-initialized database), there is nothing to seed.
+    const exchangeRatesTable = this.db.prepare(`
+      SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'exchange_rates'
+    `).get();
+
+    if (!exchangeRatesTable) {
+      console.log('ℹ️  exchange_rates table not found, skipping THB seed...');
+      return;
+    }
+
+    // Check if THB currency already exists in exchange_rates
+    const thbExists = this.db.prepare(`
+      SELECT COUNT(*) as count FROM exchange_rates WHERE to_currency = 'THB'
+    `).get();
+
+    if (thbExists.count === 0) {
+      // Add THB exchange rate for default CNY base currency
+      this.db.exec(`
+        INSERT OR IGNORE INTO exchange_rates (from_currency, to_currency, rate) VALUES
+        ('CNY', 'THB', 5.0754);
+      `);
+      console.log('✅ Added THB exchange rate for CNY base currency');
+    } else {
+      console.log('ℹ️  THB exchange rate already exists, skipping...');
+    }
+
+    console.log('✅ THB currency support added successfully');
+  }
+
+  // Migration 009: Add Discord notification channel support
+  migration_009_add_discord_notification_support() {
+    console.log('📝 Adding Discord notification channel support...');
+
+    // The notification_channels.channel_type CHECK constraint only allows
+    // ('telegram', 'email'). Recreate the table to also allow 'discord'.
+    const tableInfo = this.db.prepare(`
+      SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'notification_channels'
+    `).get();
+
+    // Guard: table is created in migration 002. Nothing to do if it's missing.
+    if (!tableInfo) {
+      console.log('ℹ️  notification_channels table not found, skipping...');
+      return;
+    }
+
+    if (tableInfo.sql && tableInfo.sql.includes("'discord'")) {
+      console.log('ℹ️  Discord channel already supported, skipping...');
+      return;
+    }
+
+    // Rename existing table
+    this.db.exec(`ALTER TABLE notification_channels RENAME TO notification_channels_old;`);
+
+    // Recreate with updated CHECK constraint including 'discord'
+    this.db.exec(`
+      CREATE TABLE notification_channels (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        channel_type TEXT NOT NULL UNIQUE CHECK (channel_type IN ('telegram', 'email', 'discord')),
+        channel_config TEXT NOT NULL,
+        is_active BOOLEAN NOT NULL DEFAULT 1,
+        last_used_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Copy existing data
+    this.db.exec(`
+      INSERT INTO notification_channels (
+        id, channel_type, channel_config, is_active, last_used_at, created_at, updated_at
+      )
+      SELECT id, channel_type, channel_config, is_active, last_used_at, created_at, updated_at
+      FROM notification_channels_old;
+    `);
+
+    // Drop old table
+    this.db.exec(`DROP TABLE notification_channels_old;`);
+
+    // Recreate indexes and update trigger (dropped with the old table)
+    this.db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_notification_channels_type ON notification_channels(channel_type);
+      CREATE INDEX IF NOT EXISTS idx_notification_channels_active ON notification_channels(is_active);
+
+      CREATE TRIGGER IF NOT EXISTS notification_channels_updated_at
+      AFTER UPDATE ON notification_channels
+      FOR EACH ROW
+      BEGIN
+          UPDATE notification_channels SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+      END;
+    `);
+
+    console.log('✅ Discord notification channel support added successfully');
   }
 
   // Helper method to parse SQL statements properly

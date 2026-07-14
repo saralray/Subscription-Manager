@@ -395,8 +395,8 @@ function validateNotificationSetting(data) {
 
         .array(data.notification_channels, 'notification_channels')
         .custom(data.notification_channels, 'notification_channels',
-            (channels) => channels && channels.every(channel => ['telegram', 'email', 'webhook'].includes(channel)),
-            'notification_channels must contain only valid channel types: telegram, email, webhook'
+            (channels) => channels && channels.every(channel => ['telegram', 'email', 'webhook', 'discord'].includes(channel)),
+            'notification_channels must contain only valid channel types: telegram, email, webhook, discord'
         )
 
         .boolean(data.repeat_notification, 'repeat_notification');
@@ -415,7 +415,7 @@ function validateChannelConfig(data) {
     validator
         .required(data.channel_type, 'channel_type')
         .string(data.channel_type, 'channel_type')
-        .enum(data.channel_type, 'channel_type', ['telegram', 'email', 'webhook'])
+        .enum(data.channel_type, 'channel_type', ['telegram', 'email', 'webhook', 'discord'])
 
         .required(data.config, 'config')
         .object(data.config, 'config');
@@ -438,6 +438,14 @@ function validateChannelConfig(data) {
         validator
             .required(data.config.url, 'config.url')
             .url(data.config.url, 'config.url');
+    } else if (data.channel_type === 'discord' && data.config) {
+        validator
+            .required(data.config.webhook_url, 'config.webhook_url')
+            .url(data.config.webhook_url, 'config.webhook_url')
+            .custom(data.config.webhook_url, 'config.webhook_url',
+                (url) => /^https:\/\/(.*\.)?discord(app)?\.com\/api\/webhooks\//.test(url),
+                'Discord webhook_url must be a valid Discord webhook URL'
+            );
     }
 
     return validator;
@@ -467,8 +475,8 @@ function validateSendNotification(data) {
 
         .array(data.channels, 'channels')
         .custom(data.channels, 'channels',
-            (channels) => !channels || channels.every(channel => ['telegram', 'email', 'webhook'].includes(channel)),
-            'channels must contain only valid channel types: telegram, email, webhook'
+            (channels) => !channels || channels.every(channel => ['telegram', 'email', 'webhook', 'discord'].includes(channel)),
+            'channels must contain only valid channel types: telegram, email, webhook, discord'
         );
 
     return validator;

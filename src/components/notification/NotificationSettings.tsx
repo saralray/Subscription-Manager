@@ -8,6 +8,7 @@ import { notificationApi, NotificationSetting } from '@/services/notificationApi
 import { useToast } from '@/hooks/use-toast';
 import { TelegramConfig } from './TelegramConfig';
 import { EmailConfig } from './EmailConfig';
+import { DiscordConfig } from './DiscordConfig';
 import { NotificationRules } from './NotificationRules';
 import { SchedulerSettings } from './SchedulerSettings';
 
@@ -114,7 +115,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user
               userId={userId}
               onConfigChange={loadSettings}
             />
-            <EmailConfig 
+            <EmailConfig
+              onConfigChange={loadSettings}
+            />
+            <DiscordConfig
               onConfigChange={loadSettings}
             />
           </div>

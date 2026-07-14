@@ -366,7 +366,18 @@ function getTemplate(notificationType, language = 'zh-CN', channel = 'telegram')
     return null;
   }
 
-  const channelTemplate = langTemplates[channel];
+  let channelTemplate = langTemplates[channel];
+
+  // Discord shares Telegram's message layout. When no Discord-specific template
+  // exists, reuse the Telegram template and convert its HTML markup to Discord
+  // Markdown so we keep a single source of truth for message content.
+  if (!channelTemplate && channel === 'discord' && langTemplates.telegram) {
+    channelTemplate = {
+      subject: langTemplates.telegram.subject,
+      content: htmlToDiscordMarkdown(langTemplates.telegram.content)
+    };
+  }
+
   if (!channelTemplate) {
     return null;
   }
@@ -378,6 +389,20 @@ function getTemplate(notificationType, language = 'zh-CN', channel = 'telegram')
     subject_template: channelTemplate.subject || null,
     content_template: channelTemplate.content
   };
+}
+
+/**
+ * 将 Telegram 的 HTML 模板转换为 Discord Markdown
+ * Telegram 模板仅使用 <b> 标签作为加粗，因此转换较为直接
+ * @param {string} html - 含 HTML 标签的内容
+ * @returns {string} Discord Markdown 内容
+ */
+function htmlToDiscordMarkdown(html) {
+  if (!html) return html;
+  return html
+    .replace(/<b>(.*?)<\/b>/gis, '**$1**')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '');
 }
 
 /**

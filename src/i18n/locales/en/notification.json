@@ -6,6 +6,7 @@
   "notificationHistory": "Notification History",
   "telegram": "Telegram",
   "email": "Email",
+  "discord": "Discord",
 
   "chatId": "Chat ID",
   "chatIdHelp": "1. Search for @userinfobot in Telegram\n2. Send any message to get your Chat ID",
@@ -33,7 +34,8 @@
   "channelsLabel": "Channels",
   "channels": {
     "telegram": "Telegram",
-    "email": "Email"
+    "email": "Email",
+    "discord": "Discord"
   },
   "sendTest": "Send Test Message",
   "settingsUpdated": "Settings updated",
@@ -155,6 +157,7 @@
     "telegramNotConfigured": "Telegram bot not configured",
     "invalidChatId": "Invalid Chat ID",
     "invalidEmail": "Invalid email address",
+    "invalidDiscordWebhook": "Invalid Discord webhook URL",
     "channelNotActive": "Channel not active",
     "notificationDisabled": "Notification type disabled",
     "subscriptionNotFound": "Subscription not found",
@@ -168,5 +171,13 @@
     "saveError": "Failed to save email configuration",
     "active": "Email channel is active",
     "valid": "Email address looks good"
+  },
+  "discordConfig": {
+    "webhookUrl": "Webhook URL",
+    "help": "Create a webhook in your Discord server: Server Settings → Integrations → Webhooks → New Webhook, then copy the Webhook URL here.",
+    "saved": "Discord channel saved",
+    "saveError": "Failed to save Discord configuration",
+    "active": "Discord channel is active",
+    "valid": "Webhook URL looks good"
   }
 }

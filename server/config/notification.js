@@ -14,7 +14,7 @@ module.exports = {
   ],
 
   // 支持的通知渠道
-  SUPPORTED_CHANNELS: ['telegram', 'email'],
+  SUPPORTED_CHANNELS: ['telegram', 'email', 'discord'],
 
   // 默认通知渠道
   DEFAULT_NOTIFICATION_CHANNELS: JSON.parse(
